@@ -1,31 +1,357 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallpaper API</title>
-    <link rel="stylesheet" href="stylesheet.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swipen</title>
+  <link rel="stylesheet" href="stylesheet.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .swipe-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .search-bar {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .card-stack {
+      position: relative;
+      width: min(600px, 90vw);
+      height: min(340px, 50vw);
+    }
+
+    .swipe-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+      border: 4px solid white;
+      background: lightgray;
+    }
+
+    .swipe-card:active { cursor: grabbing; }
+
+    .swipe-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    .stamp {
+      position: absolute;
+      top: 20px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      padding: 4px 16px;
+      border-radius: 10px;
+      border: 4px solid;
+      opacity: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      pointer-events: none;
+    }
+
+    .stamp-like { left: 20px; color: #2ecc71; border-color: #2ecc71; }
+    .stamp-nope { right: 20px; color: #e74c3c; border-color: #e74c3c; }
+
+    .card-behind {
+      transform: scale(0.95) translateY(10px);
+      z-index: 0;
+    }
+
+    .card-top { z-index: 1; }
+
+    .buttons {
+      display: flex;
+      gap: 40px;
+      margin-top: 30px;
+    }
+
+    .btn-nope, .btn-like {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 3px solid;
+      background: white;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn-nope { border-color: #e74c3c; color: #e74c3c; }
+    .btn-like { border-color: #2ecc71; color: #2ecc71; }
+
+    .btn-nope:hover, .btn-like:hover {
+      transform: scale(1.15);
+      box-shadow: 0px 6px 16px rgba(0,0,0,0.2);
+    }
+
+    .saved-section {
+      margin-top: 40px;
+      width: min(600px, 90vw);
+    }
+
+    .saved-section h2 {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .saved-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      background-color: lightgray;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .saved-grid img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border: 4px solid white;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+      display: block;
+      transition: transform 0.25s ease;
+      cursor: pointer;
+    }
+
+    .saved-grid img:hover { transform: scale(1.08); }
+
+    .status-text {
+      text-align: center;
+      color: #555;
+      margin-top: 12px;
+      min-height: 24px;
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
+
+<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="index.html">Home</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="wallpaper.html">Wallpaper</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="swipen.html">Swipen</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="wallpaper.html">Wallpaper</a></li>
+        <li class="nav-item"><a class="nav-link active" href="swipen.html">Swipen</a></li>
       </ul>
     </div>
   </div>
 </nav>
-<p>swipen.html also die swipen</p>
+
+<h1>Swipen</h1>
+
+<div class="swipe-container">
+  <div class="search-bar">
+    <input type="text" id="searchID" placeholder="Search" />
+    <input type="button" value="Search" onclick="sucheStarten()" />
+  </div>
+
+  <div class="card-stack" id="cardStack">
+    <div class="swipe-card card-behind" id="cardBehind">
+      <img src="https://placehold.co/600x340?text=Loading..." id="imgBehind" />
+    </div>
+    <div class="swipe-card card-top" id="cardTop">
+      <img src="https://placehold.co/600x340?text=Loading..." id="imgTop" />
+      <div class="stamp stamp-like" id="stampLike">👍 Like</div>
+      <div class="stamp stamp-nope" id="stampNope">✕ Nope</div>
+    </div>
+  </div>
+
+  <p class="status-text" id="statusText"></p>
+
+  <div class="buttons">
+    <button class="btn-nope" onclick="swipeLeft()" title="Verwerfen">✕</button>
+    <button class="btn-like" onclick="swipeRight()" title="Speichern">♥</button>
+  </div>
+
+  <div class="saved-section">
+    <h2>Gespeichert</h2>
+    <div class="saved-grid" id="savedGrid">
+      <p style="text-align:center; width:100%; color:#555; margin:0;">Noch nichts gespeichert.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let wallpapers = [];
+  let currentIndex = 0;
+  let savedWallpapers = [];
+  let isDragging = false;
+  let startX = 0;
+  let currentX = 0;
+
+  const cardTop = document.getElementById("cardTop");
+  const cardBehind = document.getElementById("cardBehind");
+  const imgTop = document.getElementById("imgTop");
+  const imgBehind = document.getElementById("imgBehind");
+  const stampLike = document.getElementById("stampLike");
+  const stampNope = document.getElementById("stampNope");
+  const statusText = document.getElementById("statusText");
+  const savedGrid = document.getElementById("savedGrid");
+
+  async function bilderHolen(suchbegriff = "") {
+    statusText.textContent = "Lädt...";
+    imgTop.src = "https://placehold.co/600x340?text=Loading...";
+    imgBehind.src = "https://placehold.co/600x340?text=Loading...";
+    try {
+      const randomPage = Math.floor(Math.random() * 50) + 1;
+      const response = await fetch(
+        `https://corsproxy.io/?${encodeURIComponent(
+          `https://wallhaven.cc/api/v1/search?q=${encodeURIComponent(suchbegriff)}&sorting=random&page=${randomPage}&ratios=16x9&atleast=1920x1080&purity=100`
+        )}`
+      );
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      wallpapers = data?.data || [];
+      currentIndex = 0;
+      if (wallpapers.length === 0) {
+        statusText.textContent = "Keine Ergebnisse.";
+        return;
+      }
+      statusText.textContent = "";
+      zeigeKarten();
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = "Fehler beim Laden.";
+    }
+  }
+
+  function zeigeKarten() {
+    if (currentIndex >= wallpapers.length) {
+      statusText.textContent = "Keine weiteren Wallpaper!";
+      imgTop.src = "https://placehold.co/600x340?text=Ende";
+      imgBehind.src = "https://placehold.co/600x340?text=...";
+      return;
+    }
+    const current = wallpapers[currentIndex];
+    const next = wallpapers[currentIndex + 1];
+    imgTop.src = current.thumbs.large;
+    imgTop.onerror = () => imgTop.src = "https://placehold.co/600x340?text=Unavailable";
+    if (next) {
+      imgBehind.src = next.thumbs.large;
+      imgBehind.onerror = () => imgBehind.src = "https://placehold.co/600x340?text=Unavailable";
+    } else {
+      imgBehind.src = "https://placehold.co/600x340?text=Letzte+Karte";
+    }
+    cardTop.style.transform = "";
+    cardTop.style.opacity = "";
+    stampLike.style.opacity = "0";
+    stampNope.style.opacity = "0";
+    statusText.textContent = `${currentIndex + 1} / ${wallpapers.length}`;
+  }
+
+  function swipeRight() {
+    if (currentIndex >= wallpapers.length) return;
+    const wall = wallpapers[currentIndex];
+    savedWallpapers.push(wall);
+    aktualisiereGespeichert();
+    animiereSwipe("right");
+  }
+
+  function swipeLeft() {
+    if (currentIndex >= wallpapers.length) return;
+    animiereSwipe("left");
+  }
+
+  function animiereSwipe(direction) {
+    const xOut = direction === "right" ? 800 : -800;
+    cardTop.style.transition = "transform 0.35s ease, opacity 0.35s ease";
+    cardTop.style.transform = `translateX(${xOut}px) rotate(${direction === "right" ? 20 : -20}deg)`;
+    cardTop.style.opacity = "0";
+    setTimeout(() => {
+      cardTop.style.transition = "";
+      currentIndex++;
+      zeigeKarten();
+    }, 350);
+  }
+
+  function aktualisiereGespeichert() {
+    if (savedWallpapers.length === 0) {
+      savedGrid.innerHTML = `<p style="text-align:center; width:100%; color:#555; margin:0;">Noch nichts gespeichert.</p>`;
+      return;
+    }
+    savedGrid.innerHTML = "";
+    savedWallpapers.forEach(wall => {
+      const img = document.createElement("img");
+      img.src = wall.thumbs.large;
+      img.title = wall.id;
+      img.onerror = () => img.src = "https://placehold.co/300x169?text=Unavailable";
+      img.addEventListener("click", () => {
+        window.open(`https://wallhaven.cc/w/${wall.id}`, "_blank");
+      });
+      savedGrid.appendChild(img);
+    });
+  }
+
+  // Drag / Touch swipen
+  function onDragStart(e) {
+    isDragging = true;
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    cardTop.style.transition = "";
+  }
+
+  function onDragMove(e) {
+    if (!isDragging) return;
+    currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+    const rotate = currentX * 0.08;
+    cardTop.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+    const likeOpacity = Math.min(Math.max(currentX / 80, 0), 1);
+    const nopeOpacity = Math.min(Math.max(-currentX / 80, 0), 1);
+    stampLike.style.opacity = likeOpacity;
+    stampNope.style.opacity = nopeOpacity;
+  }
+
+  function onDragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    if (currentX > 100) {
+      swipeRight();
+    } else if (currentX < -100) {
+      swipeLeft();
+    } else {
+      cardTop.style.transition = "transform 0.3s ease";
+      cardTop.style.transform = "";
+      stampLike.style.opacity = "0";
+      stampNope.style.opacity = "0";
+    }
+    currentX = 0;
+  }
+
+  cardTop.addEventListener("mousedown", onDragStart);
+  window.addEventListener("mousemove", onDragMove);
+  window.addEventListener("mouseup", onDragEnd);
+  cardTop.addEventListener("touchstart", onDragStart);
+  window.addEventListener("touchmove", onDragMove);
+  window.addEventListener("touchend", onDragEnd);
+
+  function sucheStarten() {
+    const suche = document.getElementById("searchID")?.value;
+    bilderHolen(suche || "");
+  }
+
+  bilderHolen("nature");
+</script>
 </body>
 </html>
