@@ -88,6 +88,8 @@ async function ladeExtraInfo() {
   };
 }
 
+// --- mit Die wichtigsten geholt
+
 // --- Autocomplete ---
 const WALLHAVEN_TAGS = [
   "nature","forest","mountains","ocean","beach","sunset","sunrise","sky","clouds","snow",
